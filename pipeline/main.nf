@@ -109,7 +109,7 @@ workflow.onComplete {
         copyFile(report, "${outdir}/multiqc_report.html")
     }
 
-    BCFTOOLS_STATS.out.stats | each { stats ->
+    FILTER.out.vcf_stats | each { stats ->
         copyFile(stats, "${outdir}/cohort.vcf.stats")
     }
 
