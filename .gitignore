@@ -1,0 +1,39 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment files
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+postgres_data/
+minio_data/
+
+# Coverage
+htmlcov/
+.coverage
+.coverage.*
+
+# Nextflow
+work/
+.nextflow*
+*.html
+*.trace.txt
+*.dag.png
+
+# Node
+node_modules/
