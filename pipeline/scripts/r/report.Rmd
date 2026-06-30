@@ -1,0 +1,84 @@
+---
+title: "Genomics Pipeline — Variant Calling Report"
+params:
+  vcf: NA
+  stats: NA
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: flatly
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(DT)
+library(ggplot2)
+library(dplyr)
+```
+
+## Summary
+
+```{r summary}
+if (file.exists("vcf_summary.csv")) {
+  summary <- read.csv("vcf_summary.csv")
+  knitr::kable(summary, col.names = c("Metric", "Value"))
+}
+```
+
+## Annotation Overlap
+
+```{r annotation}
+if (file.exists("annotation_summary.csv")) {
+  annot <- read.csv("annotation_summary.csv")
+  ggplot(annot, aes(x = category, y = count, fill = category)) +
+    geom_bar(stat = "identity") +
+    labs(title = "Variant Annotation Overlap", x = "Region", y = "Count") +
+    theme_minimal() +
+    theme(legend.position = "none")
+}
+```
+
+## Quality Distributions
+
+### QUAL Score
+
+```{r qual}
+if (file.exists("qual_dist.png")) {
+  knitr::include_graphics("qual_dist.png")
+}
+```
+
+### Depth Distribution
+
+```{r depth}
+if (file.exists("depth_dist.png")) {
+  knitr::include_graphics("depth_dist.png")
+}
+```
+
+### Chromosome Distribution
+
+```{r chrom}
+if (file.exists("chrom_dist.png")) {
+  knitr::include_graphics("chrom_dist.png")
+}
+```
+
+## bcftools Stats
+
+```{r stats, results='asis'}
+if (!is.na(params$stats) && file.exists(params$stats)) {
+  stats_lines <- readLines(params$stats)
+  cat("<pre><code>")
+  cat(stats_lines, sep = "\n")
+  cat("</code></pre>")
+}
+```
+
+## Session Info
+
+```{r session}
+sessionInfo()
+```

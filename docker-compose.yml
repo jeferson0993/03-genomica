@@ -1,0 +1,101 @@
+name: bioinfo-03-genomica
+
+services:
+  api:
+    container_name: genomics-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      DOMAIN: ${DOMAIN}
+      PYTHONPATH: /app
+    volumes:
+      - ./app:/app/app
+      - ./pipeline:/pipeline:ro
+      - ./scripts:/scripts:ro
+    networks:
+      - platform-net
+    restart: unless-stopped
+    depends_on:
+      - worker
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    volumes:
+      - ref_data:/ref
+      - workspace:/workspace
+      - ./pipeline:/pipeline:ro
+      - ./scripts:/scripts:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - platform-net
+    restart: unless-stopped
+    environment:
+      NXF_OPTS: -Xms512m -Xmx4g
+      JAVA_OPTS: -Xms512m -Xmx4g
+    deploy:
+      resources:
+        limits:
+          memory: 32G
+          cpus: '8'
+        reservations:
+          memory: 4G
+          cpus: '2'
+
+  ref-dl:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    command: bash /scripts/download-ref-grch38.sh
+    volumes:
+      - ref_data:/ref
+      - ./scripts:/scripts:ro
+    networks:
+      - platform-net
+    profiles:
+      - setup
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2'
+
+  frontend:
+    container_name: genomics-frontend
+    build:
+      context: ./frontend
+      args:
+        BASE_PATH: /genomics/
+        VITE_API_URL: /api/genomics
+    networks:
+      - platform-net
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.25'
+
+volumes:
+  ref_data:
+  workspace:
+
+networks:
+  platform-net:
+    external: true
+    name: bioinfo-platform-net

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genomics Pipeline</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧬</text></svg>" />
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <h1>Genomics</h1>
+        <span class="version">v0.1</span>
+      </div>
+      <nav>
+        <a href="/genomics/" class="nav-link" data-page="runs">Execuções</a>
+        <a href="/genomics/runs/new" class="nav-link" data-page="run-create">Nova Execução</a>
+        <a href="/genomics/references" class="nav-link" data-page="references">Referências</a>
+      </nav>
+    </aside>
+    <main id="content">
+      <div class="page-header">
+        <h2 id="page-title">Carregando...</h2>
+      </div>
+      <div id="page-content"></div>
+    </main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
